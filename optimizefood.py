@@ -2,6 +2,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import sys
 
 def nutritionMax(targetvec, veganmode):
     with open('calories.csv', 'rb') as f:
@@ -43,7 +44,8 @@ def nutritionMax(targetvec, veganmode):
     cbdm = carbdval.mean()
     #this is the targer vector, plane, for (caldensity, protdensity, carbdensity)
     #b = np.array([cdm,pdm,cbdm])
-    b = np.asarray(targetvec)
+    #b = np.asarray(targetvec)
+    b = targetvec
     LHS = np.dot(At, A) #this is singular
     # so we're going to do this
     #http://math.stackexchange.com/questions/381600/singular-matrix-problem
@@ -82,13 +84,21 @@ def plotResults(caldata):
     
     plt.show()
 
-def main():
-    plt.close("all")
-    caldata, xb = nutritionMax([1.0,1.0,1.0], veganmode=True)
-    resmat = []
-    for i in range(len(xb)):
-        resmat.append([caldata[i+2][0], xb[i]])
-    rmsort = sorted(resmat, key=lambda x: x[1], reverse=True)
 
+plt.close("all")
+vmode = False
+if "vegan" in sys.argv:
+    vmode = True
+indvec = sys.argv.index('-v') + 1
+tvec = np.array([sys.argv[indvec],sys.argv[indvec+1],sys.argv[indvec+2]]).astype(float)
+print tvec
+caldata, xb = nutritionMax(targetvec=tvec, veganmode=vmode)
+resmat = []
+for i in range(len(xb)):
+    resmat.append([caldata[i+2][0], xb[i]])
+rmsort = sorted(resmat, key=lambda x: x[1], reverse=True)
+
+"""
 if __name__ == "__main__":
-    main()
+    rmsort = main()
+"""
