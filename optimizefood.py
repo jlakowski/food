@@ -6,18 +6,21 @@ from mpl_toolkits.mplot3d import Axes3D
 with open('calories.csv', 'rb') as f:
     reader = csv.reader(f)
     caldata = list(reader)
-meatwords = ['pork', 'beef', 'sausage', 'chicken', 'clams', 'oysters', 'cod','salmon','herring', 'haddock', 'halibut', 'fish', 'crab','lobster','gelatin', 'lamb','deer', 'duck']
+meatwords = ['pork', 'beef', 'sausage', 'chicken', 'clams', 'oysters', 'cod','salmon','herring', 'haddock', 'halibut', 'fish', 'crab','lobster','gelatin', 'lamb','deer', 'duck', 'tuna', 'turkey','milk', 'veal', 'trout', 'salami', 'sardines', 'flounder', 'shrimp', 'perch', 'cheese', 'scallops', 'braunschweiger']
 meatind = []
+
+veganmode = True
 for k in range(2, len(caldata)):
     for i in range(2,len(caldata[2])):
         caldata[k][i] = float(caldata[k][i])
     for word in meatwords:
         if(word in caldata[k][0].lower()):
             meatind.append(k)
-           
-for k in range(len(caldata), 2, -1):
-    if k in meatind:
-        caldata.pop(k)
+
+if veganmode:
+    for k in range(len(caldata), 2, -1):
+        if k in meatind:
+            caldata.pop(k)
 
 cdnp = np.asarray(caldata)
 cdnpt = np.transpose(cdnp)
@@ -49,7 +52,8 @@ pdm = protdval.mean()
 cdm = caldvals.mean()
 cbdm = carbdval.mean()
 #this is the ideal formula for (caldensity, protdensity, carbdensity)
-b = np.array([cdm,pdm,cbdm])
+
+b = np.array([cdm,0.8,cbdm])
 
 LHS = np.dot(At, A) #this is singular
 # so we're going to do this
