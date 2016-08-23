@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import sys
 
+# use this with
+#python optimizefood.py -v 1 2 3 vegan
+#find the most optimum food to bring on a camping trip
+
+#TODO add a cost feature
 def nutritionMax(targetvec, veganmode):
     with open('calories.csv', 'rb') as f:
         reader = csv.reader(f)
@@ -72,7 +77,7 @@ def plotResults(caldata):
     protdval = cdnpt[8][2:].astype(float)
     carbdval = cdnpt[9][2:].astype(float)
 
-    caldvalshist = plt.hist(caldvals)
+    #caldvalshist = plt.hist(caldvals)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -81,24 +86,37 @@ def plotResults(caldata):
     ax.set_xlabel('Calorie Density (kCal/g)')
     ax.set_ylabel('Protien Density, (g_(protien)/g')
     ax.set_zlabel('Carb Density (g_(carb)/g')
+    ax.set_xlim([0,11])
+    ax.set_ylim([0,1])
+    ax.set_zlim([0,1])
     
     plt.show()
 
-
-plt.close("all")
-vmode = False
-if "vegan" in sys.argv:
-    vmode = True
-indvec = sys.argv.index('-v') + 1
-tvec = np.array([sys.argv[indvec],sys.argv[indvec+1],sys.argv[indvec+2]]).astype(float)
-print tvec
-caldata, xb = nutritionMax(targetvec=tvec, veganmode=vmode)
-resmat = []
-for i in range(len(xb)):
-    resmat.append([caldata[i+2][0], xb[i]])
-rmsort = sorted(resmat, key=lambda x: x[1], reverse=True)
-
-"""
+def main():
+    plt.close("all")
+    vmode = False
+    if "vegan" in sys.argv:
+        vmode = True
+    indvec = sys.argv.index('-v') + 1
+    tvec = np.array([sys.argv[indvec],sys.argv[indvec+1],sys.argv[indvec+2]]).astype(float)
+    print tvec
+    caldata, xb = nutritionMax(targetvec=tvec, veganmode=vmode)
+    #print(caldata[2:])
+    #print(len(xb))
+    cde = np.c_[caldata[2:],xb]
+    resmat = []
+    for i in range(len(xb)):
+        resmat.append([caldata[i+2][0], xb[i]])
+    rmsort = sorted(resmat, key=lambda x: x[1], reverse=True)
+    cdsort = sorted(cde, key=lambda x: x[10].astype(float), reverse=True)
+    
+    
+    for k in range(20):
+        #print rmsort[k][0]
+        print cdsort[k][0]
+    plotResults(cdsort[0:20])
+    return rmsort
+    
 if __name__ == "__main__":
     rmsort = main()
-"""
+
